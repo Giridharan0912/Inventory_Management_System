@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment;
 
 import com.alphaverse.inventorymanagementsystem.R;
 import com.alphaverse.inventorymanagementsystem.ui.HomeScreenActivity;
-import com.alphaverse.inventorymanagementsystem.ui.SplashScreenActivity;
 import com.alphaverse.inventorymanagementsystem.util.CurrentUserAPI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,7 +33,6 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -47,8 +45,8 @@ public class LoginFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser currentUser;
-    private FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
-    private CollectionReference collectionReference = fireStore.collection("Users");
+    private final FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
+    private final CollectionReference collectionReference = fireStore.collection("Users");
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private String mVerificationId;
     ArrayList<String> mobileNoArray = new ArrayList<>();
@@ -163,14 +161,16 @@ public class LoginFragment extends Fragment {
                     collectionReference.document(user).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()){
-                                Log.d(TAG, "onEvent: "+task.getResult().get("userName"));
-                                CurrentUserAPI currentUserAPI= CurrentUserAPI.getInstance();
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "onEvent: " + task.getResult().get("userName"));
+                                CurrentUserAPI currentUserAPI = CurrentUserAPI.getInstance();
                                 currentUserAPI.setUserId(String.valueOf(Objects.requireNonNull(task.getResult()).get("userId")));
                                 currentUserAPI.setUserName(String.valueOf(Objects.requireNonNull(task.getResult()).get("userName")));
                                 currentUserAPI.setUserStoreName(String.valueOf(Objects.requireNonNull(task.getResult()).get("userStoreName")));
+                                currentUserAPI.setUserPhoneNumber(String.valueOf(Objects.requireNonNull(task.getResult().get("userPhoneNumber"))));
+                                currentUserAPI.setUserEmailAddress(String.valueOf(Objects.requireNonNull(task.getResult().get("userMailID"))));
                                 progressLogin.setVisibility(View.INVISIBLE);
-                                startActivity(new Intent(getActivity(),HomeScreenActivity.class));
+                                startActivity(new Intent(getActivity(), HomeScreenActivity.class));
                             }
                         }
                     }).addOnFailureListener(e -> {

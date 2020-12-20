@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="10dp"
+    app:cardCornerRadius="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#220D32">
+
+        <TextView
+            android:id="@+id/stock_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/himalaya"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:text="Product name"
+            android:textColor="@color/white"
+            android:textSize="35sp" />
+
+        <TextView
+            android:id="@+id/stock_nos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/himalaya"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:text="200"
+            android:textColor="@color/white"
+            android:textSize="35sp" />
+    </RelativeLayout>
+
+
+</androidx.cardview.widget.CardView>

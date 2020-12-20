@@ -1,5 +1,6 @@
 package com.alphaverse.inventorymanagementsystem.ui.invoice;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,21 +30,24 @@ import java.util.Objects;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
-
+/**
+ * This scanner fragment will scan the barcode from the physical product of the users
+ * if so will opted to bill fragment to get bill of the scanned product
+ */
 public class ScannerFragment extends Fragment implements ZXingScannerView.ResultHandler, InvoiceDialogFragment.ResumeScanner {
-    public static final int REQ_CODE_FOR_SHOW_PRODUCT = 40;
+    public static final int REQ_CODE_WITH_PRODUCT_DETAILS = 40;
     private ZXingScannerView scannerView;
-    public static final int REQ_CODE_FOR_SHOW = 20;
+    public static final int REQ_CODE_FOR_CREATE_NEW = 20;
     private final String TAG = getClass().getSimpleName();
     private View scanView;
-    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private CollectionReference productCollection = firestore.collection("Products");
-    private ArrayList<Invoice> invoiceArrayList;
+    private final FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private final CollectionReference productCollection = firestore.collection("Products");
+    private final ArrayList<Invoice> invoiceArrayList;
+    private InvoiceActionListener invoiceActionListener;
 
 
     public ScannerFragment() {
-        // Required empty public constructor
-        invoiceArrayList=new ArrayList<Invoice>();
+        invoiceArrayList = new ArrayList<Invoice>();
     }
 
 
@@ -53,10 +57,12 @@ public class ScannerFragment extends Fragment implements ZXingScannerView.Result
         setHasOptionsMenu(true);
     }
 
+    /**
+     * Will open the camera and initialize with scanner to scan the products
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         scanView = inflater.inflate(R.layout.fragment_scanner, container, false);
         Toolbar toolbar = scanView.findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -64,6 +70,11 @@ public class ScannerFragment extends Fragment implements ZXingScannerView.Result
         scannerView = new ZXingScannerView(getContext());
         frameScanner.addView(scannerView);
         return scanView;
+    }
+
+    public void setInvoiceActionListener(Context context) {
+        this.invoiceActionListener = (InvoiceActionListener) context;
+
     }
 
     @Override
@@ -79,9 +90,17 @@ public class ScannerFragment extends Fragment implements ZXingScannerView.Result
         switch (item.getItemId()) {
             case R.id.scanner_add:
                 InvoiceDialogFragment dialogFragment = new InvoiceDialogFragment();
-                dialogFragment.setTargetFragment(ScannerFragment.this, REQ_CODE_FOR_SHOW);
+                dialogFragment.setTargetFragment(ScannerFragment.this, REQ_CODE_FOR_CREATE_NEW);
                 dialogFragment.show(getFragmentManager(), "create product");
                 scannerView.stopCamera();
+                break;
+            case R.id.scanner_tick:
+
+                Bundle bundle = new Bundle();
+                bundle.putInt(InvoiceActionListener.ACTION_KEY, InvoiceActionListener.ACTION_VALUE);
+                bundle.putSerializable("InvoiceBill", invoiceArrayList);
+                invoiceActionListener.onInvoiceCreated(bundle);
+                break;
 
         }
         return super.onOptionsItemSelected(item);
@@ -97,7 +116,6 @@ public class ScannerFragment extends Fragment implements ZXingScannerView.Result
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause: "+invoiceArrayList.get(0).getProductName()+invoiceArrayList.get(0).getPrice()+invoiceArrayList.get(0).getQuantity());
         Log.d(TAG, "onPause: Scanner fragment is paused");
     }
 
@@ -105,10 +123,13 @@ public class ScannerFragment extends Fragment implements ZXingScannerView.Result
     public void onStop() {
         super.onStop();
         scannerView.stopCamera();
-        invoiceArrayList.clear();
-        Log.d(TAG, "onStop: Scanner fragment is paused");
+        Log.d(TAG, "onStop: Scanner fragment is stopped");
     }
 
+    /**
+     * This method will handle the results of the scanner camera will return the value of the scanned code
+     * once the value is obtained it automatically intents to @param rawResult to show the product name and price.
+     */
     @Override
     public void handleResult(Result rawResult) {
         Log.d(TAG, rawResult.getText()); // Prints scan results
@@ -120,14 +141,14 @@ public class ScannerFragment extends Fragment implements ZXingScannerView.Result
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     String productName = (String) Objects.requireNonNull(task.getResult()).get("ProductName");
-                    String productPrice = (String)  Objects.requireNonNull(task.getResult()).get("Price");
-                    InvoiceDialogFragment dialogFragment=new InvoiceDialogFragment();
-                    Bundle bundle=new Bundle();
-                    bundle.putString("ProductName",productName);
-                    bundle.putString("ProductPrice",productPrice);
-                    dialogFragment.setTargetFragment(ScannerFragment.this,REQ_CODE_FOR_SHOW_PRODUCT);
+                    String productPrice = (String) Objects.requireNonNull(task.getResult()).get("Price");
+                    InvoiceDialogFragment dialogFragment = new InvoiceDialogFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("ProductName", productName);
+                    bundle.putString("ProductPrice", productPrice);
+                    dialogFragment.setTargetFragment(ScannerFragment.this, REQ_CODE_WITH_PRODUCT_DETAILS);
                     dialogFragment.setArguments(bundle);
-                    dialogFragment.show(getFragmentManager(),"show product");
+                    dialogFragment.show(getFragmentManager(), "show product");
                     scannerView.stopCamera();
 
                 }

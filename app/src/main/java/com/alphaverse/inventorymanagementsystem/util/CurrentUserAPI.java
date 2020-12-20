@@ -7,15 +7,34 @@ public class CurrentUserAPI extends Application {
     private String userName;
     private String userStoreName;
     private String userStoreAddress;
+    private String userPhoneNumber;
+    private String userEmailAddress;
     private static CurrentUserAPI instance;
-    public static CurrentUserAPI getInstance(){
-        if (instance==null){
-            instance=new CurrentUserAPI();
+
+    public static CurrentUserAPI getInstance() {
+        if (instance == null) {
+            instance = new CurrentUserAPI();
         }
-    return instance;
+        return instance;
     }
 
     public CurrentUserAPI() {
+    }
+
+    public String getUserPhoneNumber() {
+        return userPhoneNumber;
+    }
+
+    public void setUserPhoneNumber(String userPhoneNumber) {
+        this.userPhoneNumber = userPhoneNumber;
+    }
+
+    public String getUserEmailAddress() {
+        return userEmailAddress;
+    }
+
+    public void setUserEmailAddress(String userEmailAddress) {
+        this.userEmailAddress = userEmailAddress;
     }
 
     public String getUserId() {

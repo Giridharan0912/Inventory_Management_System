@@ -29,7 +29,6 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -47,10 +46,10 @@ public class SignUpFragment extends Fragment {
     private ActionListener actionListener;
     private final String TAG = getClass().getSimpleName();
     private FirebaseAuth firebaseAuth;
-    private FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseUser currentUser;
-    private CollectionReference collectionReference = fireStore.collection("Users");
+    private final CollectionReference collectionReference = fireStore.collection("Users");
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
     private String mVerificationId;
     ArrayList<String> mobileNoArray = new ArrayList<>();
@@ -178,6 +177,8 @@ public class SignUpFragment extends Fragment {
                             currentUserAPI.setUserId(currentUserId);
                             currentUserAPI.setUserName(name);
                             currentUserAPI.setUserStoreName(userStore);
+                            currentUserAPI.setUserPhoneNumber(userMobile);
+                            currentUserAPI.setUserEmailAddress(userMailID);
                             signUpProgress.setVisibility(View.INVISIBLE);
                             Toast.makeText(getContext(), "SignUp successful", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(getActivity(), HomeScreenActivity.class));

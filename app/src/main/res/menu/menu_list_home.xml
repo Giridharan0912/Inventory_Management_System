@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/menu_profile"
+            android:icon="@drawable/ic_iconly_light_profile"
+            android:title="Profile" />
+        <item
+            android:id="@+id/menu_bills"
+            android:icon="@drawable/ic_iconly_light_document"
+            android:title="Bills" />
+        <item
+            android:id="@+id/menu_customers"
+            android:icon="@drawable/ic_iconly_light_outline_add_user"
+            android:title="Customers" />
+        <item
+            android:id="@+id/menu_dealers"
+            android:icon="@drawable/ic_iconly_light_outline_3_user"
+            android:title="Dealers" />
+        <item
+            android:id="@+id/menu_logout"
+            android:icon="@drawable/ic_iconly_light_logout"
+            android:title="Logout" />
+    </group>
+
+
+</menu>

@@ -8,11 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,9 +22,12 @@ import androidx.fragment.app.DialogFragment;
 import com.alphaverse.inventorymanagementsystem.R;
 import com.alphaverse.inventorymanagementsystem.model.Invoice;
 
-import static com.alphaverse.inventorymanagementsystem.ui.invoice.ScannerFragment.REQ_CODE_FOR_SHOW;
-import static com.alphaverse.inventorymanagementsystem.ui.invoice.ScannerFragment.REQ_CODE_FOR_SHOW_PRODUCT;
+import static com.alphaverse.inventorymanagementsystem.ui.invoice.ScannerFragment.REQ_CODE_FOR_CREATE_NEW;
+import static com.alphaverse.inventorymanagementsystem.ui.invoice.ScannerFragment.REQ_CODE_WITH_PRODUCT_DETAILS;
 
+/**
+ * This dialog fragment box will be called during scanner fragment which gives the product name and product price so that user can customize
+ */
 public class InvoiceDialogFragment extends DialogFragment {
     private final String TAG = getClass().getSimpleName();
     private View view;
@@ -39,6 +42,7 @@ public class InvoiceDialogFragment extends DialogFragment {
             Log.e(TAG, "onAttach: ClassCastException : " + e.getMessage());
         }
 
+
     }
 
     @Nullable
@@ -49,21 +53,22 @@ public class InvoiceDialogFragment extends DialogFragment {
         EditText etPrice = view.findViewById(R.id.product_price);
         Button btnDismiss = view.findViewById(R.id.btn_dismiss);
         Button btnOk = view.findViewById(R.id.btn_ok);
+        TextView tvInvoice = view.findViewById(R.id.tv_invoice);
         Spinner quantitySpinner = view.findViewById(R.id.quantity_spinner);
         Integer[] quantityNo = {1, 2, 3, 4, 5, 6, 7, 8};
         ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(getActivity(), android.R.layout.simple_spinner_item, quantityNo);
         quantitySpinner.setAdapter(arrayAdapter);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         switch (getTargetRequestCode()) {
-            case REQ_CODE_FOR_SHOW:
+            case REQ_CODE_FOR_CREATE_NEW:
                 Toast.makeText(getContext(), "Create", Toast.LENGTH_SHORT).show();
                 btnOk.setOnClickListener(v -> {
                     String productName = etProduct.getText().toString();
                     int pricePerQuantity = Integer.parseInt(etPrice.getText().toString());
-                    int quantity=Integer.parseInt(quantitySpinner.getItemAtPosition(quantitySpinner.getSelectedItemPosition()).toString());
-                    int productPrice=pricePerQuantity*quantity;
-                    Invoice invoice=new Invoice(productName,productPrice,quantity);
-                    resumeScanner.resume(true,invoice);
+                    int quantity = Integer.parseInt(quantitySpinner.getItemAtPosition(quantitySpinner.getSelectedItemPosition()).toString());
+                    int productPrice = pricePerQuantity * quantity;
+                    Invoice invoice = new Invoice(productName, productPrice, quantity);
+                    resumeScanner.resume(true, invoice);
                     getDialog().dismiss();
                 });
                 btnDismiss.setOnClickListener(v -> {
@@ -71,7 +76,7 @@ public class InvoiceDialogFragment extends DialogFragment {
                     getDialog().dismiss();
                 });
                 break;
-            case REQ_CODE_FOR_SHOW_PRODUCT:
+            case REQ_CODE_WITH_PRODUCT_DETAILS:
                 Bundle bundle = getArguments();
                 String product = bundle.getString("ProductName");
                 String price = bundle.getString("ProductPrice");
@@ -81,10 +86,10 @@ public class InvoiceDialogFragment extends DialogFragment {
                 btnOk.setOnClickListener(v -> {
                     String productName = etProduct.getText().toString();
                     int pricePerQuantity = Integer.parseInt(etPrice.getText().toString());
-                    int quantity=Integer.parseInt(quantitySpinner.getItemAtPosition(quantitySpinner.getSelectedItemPosition()).toString());
-                    int productPrice=pricePerQuantity*quantity;
-                    Invoice invoice=new Invoice(productName,productPrice,quantity);
-                    resumeScanner.resume(true,invoice);
+                    int quantity = Integer.parseInt(quantitySpinner.getItemAtPosition(quantitySpinner.getSelectedItemPosition()).toString());
+                    int productPrice = pricePerQuantity * quantity;
+                    Invoice invoice = new Invoice(productName, productPrice, quantity);
+                    resumeScanner.resume(true, invoice);
                     getDialog().dismiss();
 
                 });
@@ -94,6 +99,7 @@ public class InvoiceDialogFragment extends DialogFragment {
                     bundle.clear();
                 });
                 break;
+
         }
         return view;
     }
@@ -104,16 +110,5 @@ public class InvoiceDialogFragment extends DialogFragment {
         void resume(boolean b, Invoice invoice);
     }
 
-    public class ItemSelectedListener implements AdapterView.OnItemSelectedListener {
 
-        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            String selected = parent.getItemAtPosition(pos).toString();
-        }
-
-        public void onNothingSelected(AdapterView parent) {
-            // Do nothing.
-
-
-        }
-    }
 }
